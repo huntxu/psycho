@@ -28,7 +28,7 @@ sub on_line {
 
     print "<$nick> $arg\n";
 
-    foreach(my @url=($arg =~ m{(https?://\S+|www\.\S+|\S+\.(?:com|net|edu|cn|org|gov)\S*|\S+\.(?:s?html|htm|php|asp|aspx)\S*)}ig)) {
+    foreach(my @url=($arg =~ m{(https?://\S+|www\.\S+|[a-zA-Z0-9]+\.(?:com|net|edu|cn|org|gov)\S*|\S+\.(?:s?html|htm|php|asp|aspx)\S*)}ig)) {
 	my $title = `./geturltitle.pl $_`;
 	unless ($?) {
 	    $self->privmsg($event->to, $title);
