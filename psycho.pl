@@ -28,12 +28,11 @@ sub on_line {
 
     print "<$nick> $arg\n";
 
-    foreach(my @url=($arg =~ m{(https?://\S+|www\.\S+|[a-zA-Z0-9]+\.(?:com|net|edu|cn|org|gov)\S*|\S+\.(?:s?html|htm|php|asp|aspx)\S*)}ig)) {
+    foreach(my @url=($arg =~ m{(https?://[\w\./]+|www\.[\w/\.]+|[\w/\.]+\.(?:com|net|edu|cn|org|gov)[\w/\.]*|[\w/\.]\.(?:s?html|htm|php|asp|aspx)[\w\./]*)}ig)) {
 	my $title = `./geturltitle.pl $_`;
 	unless ($?) {
 	    $self->privmsg($event->to, $title);
         } else {
-            $self->privmsg($event->to, "An error occured\n");
 	    print "$title\n";
 	}
     }
@@ -45,7 +44,6 @@ sub on_line {
 	} elsif ($? == 1) {
             $self->privmsg($event->to, "$nick Usage: ~w(eather) cityname\n");
         } else {
-            $self->privmsg($event->to, "$nick An error occured\n");
 	    print "$weather\n";
 	}
     }
@@ -57,7 +55,6 @@ sub on_line {
 	} elsif ($? == 1) {
             $self->privmsg($event->to, "$nick Usage:  ~d(ict) word\n        ~d(ict) [sound] -- 查找近音单词\n");
         } else {
-            $self->privmsg($event->to, "$nick An error occured\n");
 	    print "$word\n";
 	}
     }
