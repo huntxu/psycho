@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.1";
+my $_version = "0.11";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 
@@ -67,6 +67,7 @@ sub on_join {
 sub check_msg {
     my $channel = get_info("channel");
     return EAT_NONE unless (exists $conf{$channel});
+    return EAT_NONE if ($_[0][1] =~ /I'm psycho/);
 
     chomp($_[0][1]);    # text
     chomp($_[0][0]);    # nick

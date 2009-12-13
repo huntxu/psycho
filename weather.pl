@@ -41,10 +41,10 @@ if (@_ < 3) {
 my %match;
 for (1..3) {
     $_ = shift @_;
-    m{<h3>(?<date>.+?)</h3>.*?<h4[^>]+?>(?<weather>.+)</h4>.*?<h4.+High[\D|^-]+(?<hightemp>[^<]+)</h4>.*?<h4.+Low[\D|^-]+(?<lowtemp>[^>]+)</h4>}s;
+    m{<h3>(?<date>.+?)</h3>.*?<h4[^>]+?>(?<weather>.+)</h4>.*?<h4.+High:(?<hightemp>[^<]+)</h4>.*?<h4.+Low:(?<lowtemp>[^>]+)</h4>}s;
     %match = %+;
     $match{weather} =~ s[<br/>][]g;
-    $weather .= " $match{date}: $match{weather}, $match{lowtemp}-$match{hightemp}*";
+    $weather .= " $match{date}: $match{weather}, $match{lowtemp} ~ $match{hightemp}*";
 
 }
 printf "%s\n", $weather;
