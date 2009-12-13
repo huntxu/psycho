@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.11";
+my $_version = "0.12";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 
@@ -77,7 +77,7 @@ sub check_msg {
     my $nick = encode("utf8", $_[0][0]);
     my $msg;
 
-    foreach(my @url=($text =~ m{(https?://[\w\./]+|www\.[\w/\.]+|[\w/\.]+\.(?:com|net|edu|cn|org|gov)[\w/\.]*|[\w/\.]\.(?:s?html|htm|php|asp|aspx)[\w\./]*)}ig)) {
+    foreach(my @url=($text =~ m{(https?://[\w\./%-]+|www\.[\w/\.%-]+|[\w/\.%-]+\.(?:com|net|edu|cn|org|gov)[\w/\.%-]*|[\w/\.%-]\.(?:s?html|htm|php|asp|aspx)[\w\./%-]*)}ig)) {
 	$msg = `geturltitle.pl $_`;
 	unless ($?) {
             $msg = "Title: ".$msg;
