@@ -45,7 +45,8 @@ sub selfprnt {
 
 sub botsay {
     chomp($_[0]);
-    hook_timer(0, sub {command("say $_[0]\t$extra_msg"); return REMOVE;});
+    my $command = "say $_[0]\t$extra_msg";
+    hook_timer(0, sub {command($command); return REMOVE;});
     return EAT_NONE;
 }
 
