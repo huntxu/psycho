@@ -1,96 +1,129 @@
-#!/usr/bin/perl -w
+#
+# Psycho irc bot -- an Xchat perl script;
+# Author:
+#   Hunt Xu <mhuntxu@gmail.com>
+# Reference:
+#   http://xchat.org/docs/xchat2-perl.html
+#   http://xchatdata.net/Scripting/BasicPerlScript
+#
+
 use strict;
+use warnings;
 use Encode;
 use Encode::Guess;
-use Net::IRC;
+use Xchat qw( :all );
+ 
+my $_name = "psycho";
+my $_version = "0.1";
+my $_description = "Psycho irc bot";
+my $extra_msg = "[I'm $_name ^_^]";
 
-sub to_utf8 {
-    my ($msg, $charset) = @_;
-    $msg=encode("utf8",decode($charset, $msg));
-    return $msg;
+my %conf = (
+    "#gentoo-cn"    =>  0,
+    "#arch-cn"      =>  7,
+    "#Psycho"       =>  15,
+    "#fedora-zh"    =>  7,
+    "#gzuc-linux"   =>  15,
+    "#ownlinux"     =>  15,
+    "#xfce-cn"      =>  4,
+    "#xfce"         =>  0,
+    "#ubuntu-cn-translators" => 7,
+);
+
+my %settings = (
+    "weather"       =>  1,
+    "dict"          =>  2,
+    "url"           =>  4,
+    "sayhi"         =>  8,
+);
+
+sub selfprnt {
+    my $content = $_[0];
+    hook_timer(0, sub {prnt($content); return REMOVE;});
+    return EAT_NONE;
 }
 
-sub on_connect {
-   my $self = shift;
-   $self->join("#arch-cn");
-   $self->join("#Psycho");
+sub botsay {
+    chomp($_[0]);
+    hook_timer(0, sub {command("say $_[0]\t$extra_msg"); return REMOVE;});
+    return EAT_NONE;
 }
 
-sub on_line {
-    my ( $self, $event ) = @_;
-    my ( $nick, $arg ) = ( $event->nick, $event->args );
-    
-    my $charset= guess_encoding($arg,qw/cp936/);
-    unless (($charset =~ /.*or.*/) || ($charset->mime_name eq "UTF-8") || ($charset->mime_name eq "US-ASCII" )) {
-	$arg=to_utf8($arg, $charset);
-	$self->privmsg($event->to, "$nick says \"$arg\", but not in utf8.");
+sub show_help {
+}
+
+sub on_join {
+    my $channel = get_info("channel");
+    return EAT_NONE unless (exists $conf{$channel});
+
+    chomp($_[0][0]);    # nick
+    if ($settings{"sayhi"} & $conf{$channel}) {
+        botsay("$_[0][0]: hi")
     }
+    return EAT_NONE;
+}
 
-    print "<$nick> $arg\n";
+sub check_msg {
+    my $channel = get_info("channel");
+    return EAT_NONE unless (exists $conf{$channel});
 
-    foreach(my @url=($arg =~ m{(https?://[\w\./]+|www\.[\w/\.]+|[\w/\.]+\.(?:com|net|edu|cn|org|gov)[\w/\.]*|[\w/\.]\.(?:s?html|htm|php|asp|aspx)[\w\./]*)}ig)) {
-	my $title = `./geturltitle.pl $_`;
+    chomp($_[0][1]);    # text
+    chomp($_[0][0]);    # nick
+    my $if_react = $conf{$channel};
+    my $is_me = $_[1];
+    my $text = $_[0][1];
+    my $nick = encode("utf8", $_[0][0]);
+    my $msg;
+
+    foreach(my @url=($text =~ m{(https?://[\w\./]+|www\.[\w/\.]+|[\w/\.]+\.(?:com|net|edu|cn|org|gov)[\w/\.]*|[\w/\.]\.(?:s?html|htm|php|asp|aspx)[\w\./]*)}ig)) {
+	$msg = `geturltitle.pl $_`;
 	unless ($?) {
-	    $self->privmsg($event->to, $title);
-        } else {
-	    print "$title\n";
+            $msg = "Title: ".$msg;
+            if ($settings{"url"} & $if_react) {
+                botsay($msg);
+            }
+            else {
+                selfprnt($msg);
+            }
+        }
+        else {
+	    selfprnt("Error getting url <$nick> $text.");
 	}
     }
 
-    if ( $arg =~ /^~w(?:eather)?\s+(\S+)/i ) {
-	my $weather = `./weather.pl $1`;
-       	unless ($?) {
-	    $self->privmsg($event->to, "$nick $weather");
-	} elsif ($? == 1) {
-            $self->privmsg($event->to, "$nick Usage: ~w(eather) cityname\n");
-        } else {
-	    print "$weather\n";
-	}
+    if ( $text =~ /^~w(?:eather)?\s+(\S+)/i && ($settings{"weather"} & $if_react) ) {
+        $msg = `weather.pl $1`;
+    }
+    elsif ( $text =~ /^~d(?:ict)?\s+(.+)/i && ($settings{"dict"} & $if_react) ) {
+        $msg = `dict.pl $1`;
+    }
+    else {
+        return EAT_NONE;
+    }
+    
+    unless ($?) {
+        if ($is_me) {
+            botsay("$msg");
+        }
+        else {
+            botsay("$nick: $msg");
+        }
+    }
+    elsif ($? == 1) {
+        show_help;
+    }
+    else {
+        selfprnt("An error occured: <$nick> $text.\nResult: $msg");
     }
 
-    if ( $arg =~ /^~d(?:ict)?\s+(\S+)/i ) {
-	my $word = `./dict.pl $1`;
-       	if ($? == 0) {
-	    $self->privmsg($event->to, "$nick $word");
-	} elsif ($? == 1) {
-            $self->privmsg($event->to, "$nick Usage:  ~d(ict) word\n        ~d(ict) [sound] -- 查找近音单词\n");
-        } else {
-	    print "$word\n";
-	}
-    }
-
-    if ( $arg =~ /go home/i && $nick eq "huntxu") {
-        $self->privmsg( $event->to, 'BYE BYE~~' );
-        $self->quit;
-        exit 0;
-    }
+    return EAT_NONE;
 }
 
-sub on_msg {
-    my ( $self, $event ) = @_;
-    my ( $nick ) = ( $event->nick );
-    $self->privmsg($nick, "本 bot 不接受私聊\n");
-}
-
-sub on_cversion {
-   my ( $self, $event ) = @_;
-   my ( $nick ) = ( $event->nick );
-   print "receive ctcp version request from ".$nick."\n";
-   print $event->type."\n";
-   $self->ctcp_reply($nick, "VERSION 0.0.5 Psycho.");
-}
-
-my $irc = new Net::IRC;
-my $conn = $irc->newconn (Nick => "psycho",
-	    		  Server => "irc.oftc.net",
-		    	  Port => 6667,
-			  Username => "psycho",
-			  Ircname => "I'm a bot",
-		          SSL => 0);
-$conn->add_global_handler( "376", \&on_connect );
-$conn->add_global_handler("cversion", \&on_cversion);
-#$conn->add_global_handler( "disconnect", \&on_disconnect );
-$conn->add_handler( 'public', \&on_line );
-$conn->add_handler( 'msg',    \&on_msg );
-$irc->start;
+# Script starts here;
+register($_name, $_version, $_description);
+prnt("Loaded $_name $_version [$_description]");
+ 
+hook_print('Channel Message', \&check_msg, {data => 0});
+hook_print('Your Message', \&check_msg, {data => 1});
+hook_print('Join', \&on_join);
 

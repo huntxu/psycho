@@ -47,5 +47,4 @@ for (1..3) {
     $weather .= " $match{date}: $match{weather}, $match{lowtemp}-$match{hightemp}*";
 
 }
-$weather .= " www.weather.com.cn";
 printf "%s\n", $weather;
