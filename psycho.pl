@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.2";
+my $_version = "0.29";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;
@@ -23,7 +23,7 @@ my %conf = (
     "#gentoo-cn"    =>  0,
     "#arch-cn"      =>  23,
     "#Psycho"       =>  31,
-    "#fedora-zh"    =>  7,
+    "#fedora-zh"    =>  23,
     "#gzuc-linux"   =>  31,
     "#ownlinux"     =>  31,
     "#xfce-cn"      =>  4,
@@ -50,9 +50,6 @@ sub botsay {
     my $command = "say $_[0]\t$extra_msg";
     hook_timer(0, sub {command($command); return REMOVE;});
     return EAT_NONE;
-}
-
-sub show_help {
 }
 
 sub on_join {
@@ -119,6 +116,9 @@ sub check_msg {
             return EAT_NONE;
         }
     }
+    elsif ( $text =~ /^~h(?:elp)?/i && $if_react ) {
+        $msg = "~d(ict) 查单词, ~w(eather) 查天气, ~a(dd) 查 ip 地址, ~h(elp) 本信息";
+    }
     else {
         return EAT_NONE;
     }
@@ -130,9 +130,6 @@ sub check_msg {
         else {
             botsay("$nick: $msg");
         }
-    }
-    elsif ($? == 1) {
-        show_help;
     }
     else {
         selfprnt("An error occured: <$nick> $text.\nResult: $msg");
