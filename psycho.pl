@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.29";
+my $_version = "0.3";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;
@@ -72,8 +72,8 @@ sub check_msg {
     chomp($_[0][0]);    # nick
     my $if_react = $conf{$channel};
     my $is_me = $_[1];
-    my $text = $_[0][1];
-    my $nick = encode("utf8", $_[0][0]);
+    my $text = strip_code($_[0][1]);
+    my $nick = strip_code(encode("utf8", $_[0][0]));
     my $msg;
 
     foreach(my @url=($text =~ m{(https?://[\w\./%-]+|www\.[\w/\.%-]+|[\w/\.%-]+\.(?:com|net|edu|cn|org|gov)[\w/\.%-]*|[\w/\.%-]\.(?:s?html|htm|php|asp|aspx)[\w\./%-]*)}ig)) {
