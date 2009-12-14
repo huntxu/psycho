@@ -11,9 +11,7 @@ my $curlcmd = "curl --connect-timeout 5 -s -S";
 my $response 
     = `$curlcmd -d "ip=$ARGV[0]&action=2\n---" http://www.ip138.com/ips8.asp`;
 
-if ($?) {
-    exit 2;
-}
+exit 2 if ($?);
 
 $response = encode("utf8", decode("gbk", $response));
 

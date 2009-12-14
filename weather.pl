@@ -10,9 +10,7 @@ my $curlcmd = "curl --connect-timeout 5 -s -S";
 my $response 
     = `$curlcmd -d cityinfo=$ARGV[0] http://search.weather.com.cn/static/url2.php`;
 
-if ($?) {
-    exit 2;
-}
+exit 2 if ($?);
 
 $response =~ m[(\d{9})];
 if ($1 == "999999999") {
@@ -21,9 +19,7 @@ if ($1 == "999999999") {
 }
 
 $response = `$curlcmd http://www.weather.com.cn/html/weather_en/$1.shtml`;
-if ($?) {
-    exit 2;
-}
+exit 2 if ($?);
 
 my $weather = "Today is ";
 

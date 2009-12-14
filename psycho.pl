@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.3";
+my $_version = "0.31";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;

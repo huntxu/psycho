@@ -15,9 +15,7 @@ my $curlcmd = "curl -s -S -A \"Opera/10.00 (X11; Linux i686 ; U; en) Presto/2.2.
 my $response
     = `$curlcmd http://www.dict.cn/compact.php?q=$_`;
 
-if ($?) {
-    exit 2;
-}
+exit 2 if ($?);
 
 $response = encode("utf8", decode("gbk", $response));
 

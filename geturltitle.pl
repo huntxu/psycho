@@ -17,9 +17,7 @@ unless (defined($ARGV[0])) {
 my $curlcmd = "curl -s -S -A \"Opera/10.00 (X11; Linux i686 ; U; en) Presto/2.2.0\" --connect-timeout 10 --location-trusted -i --max-redirs 3";
 my $response = `$curlcmd $ARGV[0]`;
 
-if ($?) {
-    exit 2;
-}
+exit 2 if ($?);
 
 if ($response =~ m|Content-Type.*charset=([\w\-]*)|i) {
     $_ = $1;
@@ -28,7 +26,8 @@ if ($response =~ m|Content-Type.*charset=([\w\-]*)|i) {
     }
 } 
 if ($response =~ m|<title>(.*)</title>|si) {
-    $_ = $1;
+    $_ = `echo "$1" |ascii2uni -a Y -q`;
+    exit 2 if ($?);
     s/\n/ /g;
     print $_."\n";
 }
