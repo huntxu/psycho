@@ -14,20 +14,21 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.12";
+my $_version = "0.15";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
+my $mynick;
 
 my %conf = (
     "#gentoo-cn"    =>  0,
-    "#arch-cn"      =>  7,
-    "#Psycho"       =>  15,
+    "#arch-cn"      =>  23,
+    "#Psycho"       =>  31,
     "#fedora-zh"    =>  7,
-    "#gzuc-linux"   =>  15,
-    "#ownlinux"     =>  15,
+    "#gzuc-linux"   =>  31,
+    "#ownlinux"     =>  31,
     "#xfce-cn"      =>  4,
     "#xfce"         =>  0,
-    "#ubuntu-cn-translators" => 7,
+    "#ubuntu-cn-translators" => 23,
 );
 
 my %settings = (
@@ -35,6 +36,7 @@ my %settings = (
     "dict"          =>  2,
     "url"           =>  4,
     "sayhi"         =>  8,
+    "address"       =>  16,
 );
 
 sub selfprnt {
@@ -99,6 +101,24 @@ sub check_msg {
     elsif ( $text =~ /^~d(?:ict)?\s+(.+)/i && ($settings{"dict"} & $if_react) ) {
         $msg = `dict.pl $1`;
     }
+    elsif ( $text =~ /^~a(?:dd)?\s+(\S+)/i && ($settings{"address"} & $if_react) ) {
+        my $who = encode("utf8", $1);
+        my $userinfo = user_info($who);
+        if (defined($userinfo)) {
+            $_ = $userinfo->{host};
+            s/.*@(.*)/$1/;
+            if ( /((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/ ) {
+                $msg = `getip.pl $_`;
+                $msg = "$who $msg";
+            }
+            else {
+                $msg = "$who hides in $_";
+            }
+        }
+        else {
+            return EAT_NONE;
+        }
+    }
     else {
         return EAT_NONE;
     }
@@ -121,11 +141,17 @@ sub check_msg {
     return EAT_NONE;
 }
 
+sub check_hi_msg {
+    $_[0][1] =~ s/^$mynick\S+\s//;
+    return check_msg(@_);
+}
+
 # Script starts here;
 register($_name, $_version, $_description);
 prnt("Loaded $_name $_version [$_description]");
+$mynick = get_info("nick");
  
 hook_print('Channel Message', \&check_msg, {data => 0});
+hook_print('Channel Msg Hilight', \&check_hi_msg, {data => 0});
 hook_print('Your Message', \&check_msg, {data => 1});
 hook_print('Join', \&on_join);
-
