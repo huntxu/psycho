@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.15";
+my $_version = "0.2";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;
@@ -142,7 +142,7 @@ sub check_msg {
 }
 
 sub check_hi_msg {
-    $_[0][1] =~ s/^$mynick\S+\s//;
+    $_[0][1] =~ s/^$mynick\S+\s+//;
     return check_msg(@_);
 }
 
