@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.31";
+my $_version = "0.32";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;
@@ -57,6 +57,7 @@ sub on_join {
     return EAT_NONE unless (exists $conf{$channel});
 
     chomp($_[0][0]);    # nick
+    return EAT_NONE if ($_[0][0] =~ /ChanServ/);
     if ($settings{"sayhi"} & $conf{$channel}) {
         botsay("$_[0][0]: hi")
     }
