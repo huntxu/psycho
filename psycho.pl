@@ -14,10 +14,11 @@ use Encode::Guess;
 use Xchat qw( :all );
  
 my $_name = "psycho";
-my $_version = "0.32";
+my $_version = "0.4";
 my $_description = "Psycho irc bot";
 my $extra_msg = "[I'm $_name ^_^]";
 my $mynick;
+my $mysourcelink = "http://github.com/huntxu/psycho";
 
 my %conf = (
     "#gentoo-cn"    =>  0,
@@ -99,6 +100,9 @@ sub check_msg {
     elsif ( $text =~ /^~d(?:ict)?\s+(.+)/i && ($settings{"dict"} & $if_react) ) {
         $msg = `dict.pl $1`;
     }
+    elsif ($text =~ /^~s(?:ource)?/i) {
+        $msg = "I\'m here: $mysourcelink";
+    }
     elsif ( $text =~ /^~a(?:dd)?\s+(\S+)/i && ($settings{"address"} & $if_react) ) {
         my $who = encode("utf8", $1);
         my $userinfo = user_info($who);
@@ -118,7 +122,7 @@ sub check_msg {
         }
     }
     elsif ( $text =~ /^~h(?:elp)?/i && $if_react ) {
-        $msg = "~d(ict) 查单词, ~w(eather) 查天气, ~a(dd) 查 ip 地址, ~h(elp) 本信息";
+        $msg = "~d(ict) 查单词, ~w(eather) 查天气, ~a(dd) 查 ip 地址, ~s(ource) 源代码, ~h(elp) 本信息";
     }
     else {
         return EAT_NONE;
