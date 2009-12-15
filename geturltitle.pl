@@ -31,3 +31,6 @@ if ($response =~ m|<title>(.*)</title>|si) {
     s/\n/ /g;
     print $_."\n";
 }
+else {
+    exit 2;
+}
