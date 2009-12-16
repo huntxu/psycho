@@ -23,11 +23,10 @@ if ($response =~ m[<h1>(?<word>.+)</h1>(.*?<span class="pronounce">(?<pronounce>
     my %content = %+;
 
     if (defined($content{pronounce})) {
-        @_ = ($content{pronounce} =~ /&#(.*?);/g);
         my $sub;
-        foreach(@_) {
+        foreach ($content{pronounce} =~ /&#(.*?);/g) {
             $sub = e2char($_);
-            $content{pronounce} =~ s/&#$_;/$sub/;
+            $content{pronounce} =~ s/&#$_;/$sub/g;
         }
         $content{pronounce} = encode("utf8", $content{pronounce});
     }

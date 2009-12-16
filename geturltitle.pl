@@ -26,7 +26,7 @@ if ($response =~ m|Content-Type.*charset=([\w\-]*)|i) {
     }
 } 
 if ($response =~ m|<title>(.*)</title>|si) {
-    $_ = `echo "$1" |ascii2uni -a Y -q`;
+    $_ = `echo "$1" | ascii2uni -a Y -q`;
     exit 2 if ($?);
     s/\n/ /g;
     print $_."\n";
