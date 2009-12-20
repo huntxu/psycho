@@ -13,7 +13,7 @@ s/ /%20/g;
 
 my $curlcmd = "curl -s -S -A \"Opera/10.00 (X11; Linux i686 ; U; en) Presto/2.2.0\" --connect-timeout 5"; 
 my $response
-    = `$curlcmd http://www.dict.cn/compact.php?q=$_`;
+    = `$curlcmd http://dict.cn/compact.php?q=$_`;
 
 exit 2 if ($?);
 
