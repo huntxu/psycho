@@ -14,7 +14,7 @@ unless ( defined( $ARGV[0] ) ) {
 }
 
 my $curlcmd =
-"curl -s -S -A \"Opera/10.00 (X11; Linux i686 ; U; en) Presto/2.2.0\" --connect-timeout 10 --location-trusted -i --max-redirs 3";
+"curl -s -S -A \"Opera/10.00 (X11; Linux i686 ; U; en) Presto/2.2.0\" --connect-timeout 6 --max-filesize 102400 --location-trusted -i --max-redirs 3";
 my $response = `$curlcmd $ARGV[0]`;
 
 exit 2 if ($?);
