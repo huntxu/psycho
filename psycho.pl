@@ -85,6 +85,7 @@ m{(https?://[\w\./%-]+|www\.[\w/\.%-]+|[\w/\.%-]+\.(?:com|net|edu|cn|org|gov)[\w
         )
       )
     {
+        next if ($text =~ m{@}ig);
         $msg = `geturltitle.pl $_`;
         unless ($?) {
             $msg = "Title: " . $msg;
