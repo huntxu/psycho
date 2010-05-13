@@ -25,7 +25,7 @@ if ( $response =~ m|Content-Type.*charset=([\w\-]*)|i ) {
         $response = to_utf8( $response, $_ );
     }
 }
-if ( $response =~ m|<title>(.*)</title>|si ) {
+if ( $response =~ m|<title>(.*?)</title>|si ) {
     $_ = `echo "$1" | ascii2uni -a Y -q`;
     exit 2 if ($?);
     s/\n/ /g;

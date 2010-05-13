@@ -80,12 +80,10 @@ sub check_msg {
 
     foreach (
         my @url = (
-            $text =~
-m{(https?://[\w\./%-]+|www\.[\w/\.%-]+|[\w/\.%-]+\.(?:com|net|edu|cn|org|gov)[\w/\.%-]*|[\w/\.%-]\.(?:s?html|htm|php|asp|aspx)[\w\./%-]*)}ig
+            $text =~ m{(https?://[\w\./%-]+)}ig
         )
       )
     {
-        next if ($text =~ m{@}ig);
         $msg = `geturltitle.pl $_`;
         unless ($?) {
             $msg = "Title: " . $msg;
