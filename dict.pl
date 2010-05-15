@@ -5,7 +5,6 @@ use Encode;
 
 if ( !defined( $ARGV[0] ) ) {
     print "Usage: dict.pl word\n";
-    print "       dict.pl [word]\n";
     exit 1;
 }
 $_ = join "%20", @ARGV;

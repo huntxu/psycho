@@ -14,7 +14,7 @@ use Encode::Guess;
 use Xchat qw( :all );
 
 my $_name        = "psycho";
-my $_version     = "0.4";
+my $_version     = "0.49";
 my $_description = "Psycho irc bot";
 my $extra_msg    = "[I'm $_name ^_^]";
 my $mynick;
@@ -99,12 +99,12 @@ sub check_msg {
         }
     }
 
-    if ( $text =~ /^~w(?:eather)?\s+(\S+)/i
+    if ( $text =~ /^~w(?:eather)?\s+([\w\d]+)/i
         && ( $settings{"weather"} & $if_react ) )
     {
         $msg = `weather.pl $1`;
     }
-    elsif ( $text =~ /^~d(?:ict)?\s+(.+)/i
+    elsif ( $text =~ /^~d(?:ict)?\s+([\w\s\']+)/i
         && ( $settings{"dict"} & $if_react ) )
     {
         $msg = `dict.pl $1`;
